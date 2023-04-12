@@ -1,0 +1,39 @@
+name: Run Containers
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout code
+    - uses: actions/checkout@v3
+
+    - name: Start containers
+      run: |
+        docker-compose up -d
+        sleep 10
+
+    - name: Wait for containers to start
+      run: |
+        while [[ "$(docker-compose ps -q)" == ""]]; do
+          sleep 2
+        done
+
+    - name: Check containers are running
+      run: while [[ "$(docker-compose ps -q | xargs docker inspect -f '{{.State.Health.Status}}')" != "healthy" ]]; do
+        sleep 2
+      done
+
+    - name: Stop containers
+      run: docker-compose down
+
+    - name: Dump Docker logs on failure
+      if: failure()
+      run: docker-compose logs
+
+#Eli Gilgur

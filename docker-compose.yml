@@ -1,0 +1,35 @@
+version: '3'
+services:
+  api-server:
+    build: ./
+    env_file:
+      - ./config/config.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      - storybook-net
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/user/src/app/node_modules
+  mongo:
+    image: mongo:3.6-xenial
+    environment:
+      - MONGO_INITDB_DATABASE=storybooks # initial database
+    networks:
+      - storybook-net
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+    
+
+networks:
+  storybook-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+#Eli Gilgur
