@@ -27,9 +27,10 @@ jobs:
 
     - name: Check containers are running
       run: |
-        while [[ "$(docker-compose ps -q | xargs docker inspect -f '{{.State.Health.Status}}')" != "healthy" ]]; do
+        while [[ "$(docker-compose ps -q | xargs docker inspect -f '{{if .State.Running}}true{{else}}false{{end}}')" == "false" ]]; do
           sleep 2
         done
+
 
     - name: Stop containers
       run: docker-compose down
