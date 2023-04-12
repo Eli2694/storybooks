@@ -1,6 +1,7 @@
 name: Run Containers
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -25,9 +26,10 @@ jobs:
         done
 
     - name: Check containers are running
-      run: while [[ "$(docker-compose ps -q | xargs docker inspect -f '{{.State.Health.Status}}')" != "healthy" ]]; do
+      run: |
+        while [[ "$(docker-compose ps -q | xargs docker inspect -f '{{.State.Health.Status}}')" != "healthy" ]]; do
         sleep 2
-      done
+        done
 
     - name: Stop containers
       run: docker-compose down
